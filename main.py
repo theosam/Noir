@@ -28,14 +28,14 @@ class Game:
 def init():
 	pygame.init()
 	pygame.time.set_timer(USEREVENT+1, 1)
-	windowSurface = pygame.display.set_mode((1024, 600), 0, 32)
+	windowSurface = pygame.display.set_mode((1024, 768), 0, 32)
 	windowSurface.fill((0,0,0))
 	pygame.display.update()
 			
 def process():
 	init()
 	#if pygame.display.mode_ok((1024,768), FULLSCREEN):
-	screen = pygame.display.set_mode((1024,600),FULLSCREEN,16)
+	screen = pygame.display.set_mode((1024,768),pygame.RESIZABLE,16)
 	g = Game()
 	while True:
 		for event in pygame.event.get():

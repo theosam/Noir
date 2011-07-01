@@ -23,7 +23,7 @@ class Edit:
 	
 	def __init__(self, nmap, num_maps):
 		self.info_surf = pygame.Surface((200,200))
-		self.info_font = pygame.font.SysFont("Ariel", 100, False, False)
+		self.info_font = pygame.font.SysFont("Ariel", 35, False, False)
 		print "Initilizing editor"
 		self.num_maps = num_maps
 		self.ed_map = nmap
@@ -70,21 +70,21 @@ class Edit:
 			return 1
 		elif e.type == MOUSEBUTTONDOWN:
 			pos = pygame.mouse.get_pos()
-			if self.mode == 0:
-				if self.grab_id > -1:
-					print self.grab_id
-					cell = self.ed_map.layer[self.cur_lay-1]
-					#Consecutive Cells
-					#f(x,y) = width * y - (width - x)
-					#w00t faster to get consecutive cell from x and y by taking floor of mouse pos divide by tile size :W
-					# O( n ) => O( 1 ) performance increase (possible research paper idea?)
-					c = self.ed_map.h * (pos[0]/32) - (self.ed_map.h - (pos[1]/32)) + self.ed_map.h
-					cell[c].id = self.grab_id
-					self.ed_map.layer[self.cur_lay-1] = cell
-			elif self.mode == 1:
-				wh = self.ed_map.tinfo[self.cur_lay-1]
-				self.grab_id = (wh[1]/32) * (pos[1]/32) - ((wh[1]/32) - (pos[0]/32)) + (wh[1]/32)
-			return 1
+			tx = self.ed_map.dx
+			ty = self.ed_map.dy
+			if pos[0] <= self.ed_map.w*32 and pos[1] <= self.ed_map.h*32:
+				if self.mode == 0:
+					if self.grab_id > -1:
+						cell = self.ed_map.layer[self.cur_lay-1]
+						#Consecutive Cells
+						#f(x,y) = width * y - (width - x)
+						c = self.ed_map.h * ((pos[0]-tx)/32) - (self.ed_map.h - ((pos[1]-ty)/32)) + self.ed_map.h
+						cell[c].id = self.grab_id
+						self.ed_map.layer[self.cur_lay-1] = cell
+				elif self.mode == 1:
+					wh = self.ed_map.tinfo[self.cur_lay-1]
+					self.grab_id = (wh[1]/32) * (pos[1]/32) - ((wh[1]/32) - (pos[0]/32)) + (wh[1]/32)
+				return 1
 		self.cont_key = 0 
 		return 0
 
@@ -95,7 +95,6 @@ class Edit:
 	
 	def get_ui_surface(self):
 		ts = self.ed_map.tw
-		self.info_surf = self.info_font.render("Test", True,(0,255,0))
 		if self.mode == 0:
 			self.ui.blit(self.ed_map.get_map_surf(self.cur_lay),(0,0))
 			tx = self.ed_map.dx
@@ -117,7 +116,15 @@ class Edit:
 				pygame.draw.line(self.ui,(255,255,255),(0,i*ts),(wh[1]*ts,i*ts))
 			for j in range(0, wh[0]):
 				pygame.draw.line(self.ui,(255,255,255),(j*ts,0),(j*ts,wh[0]*ts))
-		self.ui.blit(self.info_surf,(0,0))
+		tmplaygfx = self.ed_map.layer_gfx[self.cur_lay-1]
+		self.ui.blit(tmplaygfx[self.grab_id],pygame.mouse.get_pos())
+		pygame.draw.rect(self.ui,(0,0,0),pygame.Rect(0,0,200,150))
+		infotxt = str(pygame.mouse.get_pos()) 
+		self.ui.blit(self.info_font.render((infotxt), True,(0,255,0)),(0,0))
+		infotxt =  "Mode: " + str(self.mode)
+		self.ui.blit(self.info_font.render((infotxt), True, (0,255,0)),(0,30))
+		infotxt = "Layer: " + str(self.cur_lay - 1)	
+		self.ui.blit(self.info_font.render((infotxt), True, (0,255,0)),(0,60))
 		return self.ui
 	
 	#Get rid of the surfacce so we can update frame

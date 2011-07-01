@@ -1,0 +1,15 @@
+Noir
+-------
+Q - QUIT
+L - LAYER MODE
+M - MAP MODE
+1, 2 - SWITCH LAYERS
+S - SAVE
+
+Changes
+--------
+1. Info
+2. Fixed scrolling bug
+3. Windowed
+4. Better resolution
+5. Cursor
